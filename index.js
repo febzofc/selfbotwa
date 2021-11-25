@@ -13,12 +13,14 @@ const {
     mentionedJid,
     processTime
 } = require("@adiwajshing/baileys")
+const hx = require('hxz-api')
 const ffmpeg = require('fluent-ffmpeg')
 const axios = require('axios')
 const { exec } = require('child_process')
 const { fetchJson, color, bgcolor } = require('./lib/fetcher')
 const { y2mate } = require('./lib/y2mate');
 const { y2mateA, y2mateV } = require('./lib/y2mate.js')
+const { yta, ytv, igdl, upload, formatDate } = require('./lib/ytdl')
 const { wait, getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close, uploadImages } = require('./lib/function')
 const fetch = require('node-fetch')
 const get = require('got')
@@ -98,7 +100,7 @@ pebz.on('credentials-updated', () => {
             if (chat.action == 'add') {
                 ini_user = pebz.contacts[mem]
                 group_info = await pebz.groupMetadata(chat.jid)
-                ini_img = await getBuffer(`https://api.dapuhy.ga/api/canvas/welcome2?name=${ini_user.notify}&discriminator=${group_info.participants.length}&member=${group_info.participants.length}&gcname=${group_info.subject}&pp=${pp_user}&bg=https://www.linkpicture.com/q/20211125_113317.jpg&apikey=lordpebri`)                          
+                ini_img = await getBuffer(`https://api.dapuhy.ga/api/canvas/welcome2?name=${ini_user.notify}&discriminator=${group_info.participants.length}&member=${group_info.participants.length}&gcname=${group_info.subject}&pp=${pp_user}&bg=https://www.linkpicture.com/q/20211125_113317.jpg&apikey=lordpebri`)                     
                 welkam = `${ini_user.notify}, Welkam to ${group_info.subject}`
                 await pebz.sendMessage(chat.jid, ini_img, MessageType.image, { caption: welkam })
             }
@@ -128,12 +130,10 @@ pebz.on('credentials-updated', () => {
 			const content = JSON.stringify(mek.message)
 			const from = mek.key.remoteJid
 			const type = Object.keys(mek.message)[0]
-			/*const { text, extendedText, contact, location, liveLocation, image, video, sticker, document, audio, product } = MessageType*/
 			const { text, extendedText, contact, contactsArray, groupInviteMessage, listMessage, buttonsMessage, location, liveLocation, image, video, sticker, document, audio, product, quotedMsg } = MessageType
 			
 			const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
 			const wita = moment.tz("Asia/Makassar").format("HH:mm:ss")
-			/*body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message.imageMessage.caption.startsWith(prefix) ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption.startsWith(prefix) ? mek.message.videoMessage.caption : (type == 'extendedTextMessage') && mek.message.extendedTextMessage.text.startsWith(prefix) ? mek.message.extendedTextMessage.text : ''*/
 			body = (type === 'conversation' && mek.message.conversation.startsWith(prefix)) ? mek.message.conversation : (type == 'imageMessage') && mek.message[type].caption.startsWith(prefix) ? mek.message[type].caption : (type == 'videoMessage') && mek.message[type].caption.startsWith(prefix) ? mek.message[type].caption : (type == 'extendedTextMessage') && mek.message[type].text.startsWith(prefix) ? mek.message[type].text : (type == 'listResponseMessage') && mek.message[type].singleSelectReply.selectedRowId ? mek.message[type].singleSelectReply.selectedRowId : (type == 'buttonsResponseMessage') && mek.message[type].selectedButtonId ? mek.message[type].selectedButtonId : ''
 			budy = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : ''
 			const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
@@ -141,13 +141,14 @@ pebz.on('credentials-updated', () => {
 			const isCmd = body.startsWith(prefix)
            
             const botNumber = pebz.user.jid
-			const ownerNumber = ['6285849261085@s.whatsapp.net']
+			const ownerNumber = ['6285849261085@s.whatsapp.net','6287705048235@s.whatsapp.net']
 			const isGroup = from.endsWith('@g.us')
 			const sender = isGroup ? mek.participant : mek.key.remoteJid
 			pushname = pebz.contacts[sender] != undefined ? pebz.contacts[sender].vname || pebz.contacts[sender].notify : undefined
 			const groupMetadata = isGroup ? await pebz.groupMetadata(from) : ''
 			const groupName = isGroup ? groupMetadata.subject : ''
 			const groupId = isGroup ? groupMetadata.jid : ''
+			const q = args.join(' ')
 			const groupMembers = isGroup ? groupMetadata.participants : ''
 			const groupAdmins = isGroup ? getGroupAdmins(groupMembers) : ''
 			const isBotGroupAdmins = groupAdmins.includes(botNumber) || false
@@ -384,20 +385,28 @@ const time2 = moment().tz("Asia/Makassar").format("HH:mm:ss");
              case 'help':             
 		     const hiya = await fetchJson('https://xinzbot-api.herokuapp.com/api/ucapan?apikey=XinzBot&timeZone=Asia/Jakarta', {method:'get'})
 		     var p = '```'
-		    const tod =`${p}SELFBOT${p}
-${p}${ucapanWaktu} kak ${pushname}${p}		    
-${p}prefix : ${prefix}${p}`
+		    const tod =`${p}SELFBOT FEBRI${p}
+${p}😇${ucapanWaktu} kak ${pushname}${p}		    
+${p}😎prefix : ${prefix}${p}`
 tod2 =`
-${p}➸ ${prefix}self${p}
-${p}➸ ${prefix}public${p}
-${p}➸ ${prefix}broadcast${p} 
-${p}➸ ${prefix}sticker${p} 
-${p}➸ ${prefix}sticker2${p} 
-${p}➸ ${prefix}nulis <text>${p}
-${p}➸ ${prefix}attp <text>${p}
-${p}➸ ${prefix}play <judul lagunya>${p}
-${p}➸ ${prefix}removebg <reply img>${p}
-${p}➸ ${prefix}topdf <reply img>${p}
+*_📋ListMenu_*
+${p}📴${prefix}self${p}
+${p}📳${prefix}public${p}
+${p}🔊${prefix}broadcast${p} 
+${p}👻${prefix}sticker${p} 
+${p}👻${prefix}sticker2${p} 
+${p}📚${prefix}nulis <text>${p}
+${p}🍃${prefix}play <judul lagunya>${p}
+${p}🍃${prefix}tiktokmusic <link>${p}
+${p}💾${prefix}tiktokdl <linknya>${p}
+${p}🗃️${prefix}imgtopdf <reply img>${p}
+*_🎮FunGame_*
+${p}🆚${prefix}truth${p}
+${p}🆚${prefix}dare${p}
+
+*_ɪɴғᴏ ʙᴏᴛ_*
+» ɢᴜɴᴀᴋᴀɴ ʟɪɴᴋ ᴛɪᴋᴛᴏᴋ ᴏʀɪ ɴᴏ ʟɪᴛᴇ
+» ᴛᴇᴋs ᴊᴀɴɢᴀɴ ᴛᴇʀʟᴀʟᴜ ᴘᴀɴᴊᴀɴɢ
 
 Made With❣️
 `           
@@ -442,61 +451,92 @@ const pebz2 = {
            break
            
            
-           
            case 'play':
-teks = args.join(' ')
-reply(mess.wait)
-if (!teks.endsWith("-doc")){
-resi = await yts(`${teks}`).catch(e => {
-reply('_[ ! ] Error Query Yang Anda Masukan Tidak Ada_')
-})
-let thumbInfo = `❒「  *Youtube Search*  」
-├ *Judul :* ${resi.all[0].title}
-├ *ID Video :* ${resi.all[0].videoId}
-├ *Diupload Pada :* ${resi.all[0].ago}
-├ *Views :* ${resi.all[0].views}
-├ *Durasi :* ${resi.all[0].timestamp}
-├ *Channel :* ${resi.all[0].author.name}
-└ *Link Channel :* ${resi.all[0].author.url}
-
-*_Tunggu Proses Upload....._*
-`
-sendFileFromUrl(resi.all[0].image, image, {quoted: fkontak, caption: thumbInfo})
-resi = await y2mateA(resi.all[0].url).catch(e => {
-reply('_[ ! ] Error Saat Memasuki Web Y2mate *Coba Ulangi*_')
-})
-sendFileFromUrl(resi[0].link, audio, {quoted: fkontak, mimetype: 'audio/mp4', filename: resi[0].output})
+             if (args.length < 1) return reply(`Kirim perintah *${prefix}play query`)
+             reply(mess.wait)
+             let yut = await yts(q)
+             yta(yut.videos[0].url)             
+             .then(async(res) => {
+             const { thumb, title, filesizeF, filesize } = res
+             const capti = `𝗬𝗢𝗨𝗧𝗨𝗕𝗘 𝗣𝗟𝗔𝗬🍁
+		     
+•💬 Judul : ${yut.all[0].title}
+•🎥 ID Video : ${yut.all[0].videoId}
+•⏰️ Diupload Pada : ${yut.all[0].ago}
+•👁️️ Views : ${yut.all[0].views}
+•▶️ Durasi : ${yut.all[0].timestamp}
+•📍 Channel : ${yut.all[0].author.name}
+•🔗 Link Channel : ${yut.all[0].author.url}`
+             ya = await getBuffer(thumb)
+             py =await pebz.prepareMessage(from, ya, image)
+             gbutsan = [{buttonId: `${prefix}buttonmusic ${yut.all[0].url}`, buttonText: {displayText: '🎵AUDIO'}, type: 1},{buttonId: `${prefix}buttonvideo ${yut.all[0].url}`, buttonText: {displayText: '🎥VIDEO'}, type: 1}]
+             gbuttonan = {
+             imageMessage: py.message.imageMessage,
+             contentText: capti,
+             footerText: 'Silahkan Pilih Jenis File Dibawah Ini☕',
+             buttons: gbutsan,
+             headerType: 4
 }
-if (teks.endsWith("-doc")){
-const tec = teks.split("-doc")
-res = await yts(`${tec}`).catch(e => {
-reply('_[ ! ] Error Query Yang Anda Masukan Tidak Ada_')
-})
-let thumbInfo = `❒「  *${botname}*  」
-├ *Judul :* ${res.all[0].title}
-├ *ID Video :* ${res.all[0].videoId}
-├ *Diupload Pada :* ${res.all[0].ago}
-├ *Views :* ${res.all[0].views}
-├ *Durasi :* ${res.all[0].timestamp}
-├ *Channel :* ${res.all[0].author.name}
-└ *Link Channel :* ${res.all[0].author.url}
-
-*_Tunggu Proses Upload....._*
-`
-sendFileFromUrl(res.all[0].image, image, {quoted: fkontak, caption: thumbInfo})
-res = await y2mateA(res.all[0].url).catch(e => {
-reply('_[ ! ] Error Saat Memasuki Web Y2mate*Coba Ulangi*_')
-})
-sendFileFromUrl(res[0].link, document, {quoted: msg, mimetype: 'audio/mp3', filename: res[0].output})
-}
-break          
+             await pebz.sendMessage(from, gbuttonan, MessageType.buttonsMessage)})
+             break                
+             case 'buttonmusic':
+             if(!q) return reply('linknya?')              
+             res = await yta(`${q}`).catch(e => {
+             reply('```[ ! ] Error Saat Mengirim Audio```')})
+             sendMedia(from, `${res.dl_link}`,{quoted:mek})
+             break         
+case 'buttonvideo':
+             if(!q) return reply('linknya?')            
+             res = await ytv(`${q}`).catch(e => {
+             reply('```[ ! ] Error Saat Mengirim Video```')})
+             sendMedia(from, `${res.dl_link}`,'Nih Kack')
+             break
+           
+                   case 'tiktokdl':
+                    if (args.length == 0) return reply(`Contoh: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
+                    ini_url = args[0]
+                    ini_url = `http://api.lolhuman.xyz/api/tiktok?apikey=DashBot&url=${ini_url}`
+                    get_result = await fetchJson(ini_url)
+                    ini_buffer = await getBuffer(get_result.result.link)
+                    pebz.sendMessage(from, ini_buffer, video, { quoted: mek })
+                    break
+case 'tiktokmusic':
+                    if (args.length == 0) return reply(`Example: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
+                    reply('tunggu broo')
+                    ini_link = args[0]
+                    get_audio = await getBuffer(`https://api.lolhuman.xyz/api/tiktokmusic?apikey=${lol}&url=${ini_link}`)
+                    await pebz.sendMessage(from, get_audio, audio, { mimetype: Mimetype.mp4Audio, quoted: mek })
+                    break       
+          case 'trut':
+            case 'truth':
+                  if (!isGroup) return reply('KhususGrup')
+                  const trut =['Pernah suka sama siapa aja? berapa lama?','Kalau boleh atau kalau mau, di gc/luar gc siapa yang akan kamu jadikan sahabat?(boleh beda/sma jenis)','apa ketakutan terbesar kamu?','pernah suka sama orang dan merasa orang itu suka sama kamu juga?','Siapa nama mantan pacar teman mu yang pernah kamu sukai diam diam?','pernah gak nyuri uang nyokap atau bokap? Alesanya?','hal yang bikin seneng pas lu lagi sedih apa','pernah cinta bertepuk sebelah tangan? kalo pernah sama siapa? rasanya gimana brou?','pernah jadi selingkuhan orang?','hal yang paling ditakutin','siapa orang yang paling berpengaruh kepada kehidupanmu','hal membanggakan apa yang kamu dapatkan di tahun ini','siapa orang yang bisa membuatmu sange','siapa orang yang pernah buatmu sange','(bgi yg muslim) pernah ga solat seharian?','Siapa yang paling mendekati tipe pasangan idealmu di sini','suka mabar(main bareng)sama siapa?','pernah nolak orang? alasannya kenapa?','Sebutkan kejadian yang bikin kamu sakit hati yang masih di inget','pencapaian yang udah didapet apa aja ditahun ini?','kebiasaan terburuk lo pas di sekolah apa?']
+		const ttrth = trut[Math.floor(Math.random() * trut.length)]
+		truteh = await getBuffer(`https://www.linkpicture.com/q/images_72.png`)
+	    but = [
+          { buttonId: `${prefix}truth`, buttonText: { displayText: 'ᴛʀᴜᴛʜ' }, type: 1 },
+          { buttonId: `${prefix}dare`, buttonText: { displayText: 'ᴅᴀʀᴇ' }, type: 1 }
+        ]
+        sendButLocation(from, ttrth, 'GK JALANIN WAJIB DONATE',truteh, but, {quoted: mek})
+	        	break
+		case 'dare':
+		if (!isGroup) return reply('KhususGrup')
+		const dare =['Kirim pesan ke mantan kamu dan bilang "aku masih suka sama kamu','telfon crush/pacar sekarang dan ss ke pemain','pap ke salah satu anggota grup','Bilang "KAMU CANTIK BANGET NGGAK BOHONG" ke cowo','ss recent call whatsapp','drop emot "😎??" setiap ngetik di gc/pc selama 1 hari','kirim voice note bilang can i call u baby?','drop kutipan lagu/quote, terus tag member yang cocok buat kutipan itu','pake foto sule sampe 3 hari','ketik pake bahasa daerah 24 jam','ganti nama menjadi "gue anak lucinta luna" selama 5 jam','chat ke kontak wa urutan sesuai %batre kamu, terus bilang ke dia "i lucky to hv you','prank chat mantan dan bilang " i love u, pgn balikan','record voice baca surah al-kautsar','bilang "i hv crush on you, mau jadi pacarku gak?" ke lawan jenis yang terakhir bgt kamu chat (serah di wa/tele), tunggu dia bales, kalo udah ss drop ke sini','sebutkan tipe pacar mu!','snap/post foto pacar/crush','teriak gajelas lalu kirim pake vn kesini','pap mukamu lalu kirim ke salah satu temanmu','kirim fotomu dengan caption, aku anak pungut','teriak pake kata kasar sambil vn trus kirim kesini','teriak " anjimm gabutt anjimmm " di depan rumah mu','ganti nama jadi " BOWO " selama 24 jam','Pura pura kerasukan, contoh : kerasukan maung, kerasukan belalang, kerasukan kulkas, dll']
+		const der = dare[Math.floor(Math.random() * dare.length)]
+		tod = await getBuffer(`https://www.linkpicture.com/q/images_72.png`)
+	    but = [
+          { buttonId: `${prefix}truth`, buttonText: { displayText: 'ᴛʀᴜᴛʜ' }, type: 1 },
+          { buttonId: `${prefix}dare`, buttonText: { displayText: 'ᴅᴀʀᴇ' }, type: 1 }
+        ]
+        sendButLocation(from, der, 'GK JALANIN WAJIB DONATE',tod, but, {quoted: mek})
+        		break
            case 'topdf':
            if (!isQuotedImage) return reply('image nya di reply')
            const ida = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace("quotedM","m")).message.extendedTextMessage.contextInfo : mek
            const idk = await pebz.downloadMediaMessage(ida, 'buffer') 
            const getpng = await uploadImages(idk, false)  
            reply(mess.wait)
-           pdf = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/imgtopdf?apikey=${lol}&img=${getpng}`)
+           pdf = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/imgtopdf?apikey=DashBot&img=${getpng}`)
            pebz.sendMessage(from, pdf, document, { mimetype: Mimetype.pdf, quoted:mek }).catch((err) => reply('error'))
            break
            case 'removebg':
@@ -505,7 +545,7 @@ break
            const pebzgans1  = await pebz.downloadMediaMessage(biasalah, 'buffer') 
            const getbg = await uploadImages(pebzgans1, false) 
            reply(mess.wait)
-           pft = await getBuffer(`http://lolhuman.herokuapp.com/api/removebg?apikey=${lol}&img=${getbg}`)
+           pft = await getBuffer(`http://lolhuman.herokuapp.com/api/removebg?apikey=DashBot&img=${getbg}`)
            await pebz.sendMessage(from, pft, image, {quoted:mek,caption:'Done'}).catch((err) => reply('error ):'))
            break 
            case 'self':
@@ -625,13 +665,13 @@ sendStickerFromUrl(from, `${anu1}`, mess.success)
 reply('Gunakan foto!')
 }
 break   
-          case 'stickerbulet':
+			         case 'stickerbulet':
           const encmedia1 = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace("quotedM","m")).message.extendedTextMessage.contextInfo : mek
           const media1 = await pebz.downloadMediaMessage(encmedia1, 'buffer') 
           const patrcik = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
 	      const hayokamu = await pebz.downloadAndSaveMediaMessage(patrcik, `./trash/${sender}`)
 		  getimg = await uploadImages(media1, false)
-		  kamu = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/towebpwround?apikey=${lol}&img=${getimg}`) 
+		  kamu = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/towebpwround?apikey=DashBot&img=${getimg}`) 
 		  const packnamenya = 'selfbot'
           const authornya = 'LordPebri'
 		  exif.create(packnamenya, authornya, `biasalah_${sender}`)
@@ -775,13 +815,7 @@ break
          }
          reply('Suksess broadcast')
          }
-         break
-          case 'attp':      
-          if (args.length < 1) return reply(mess.notxt)
-          const haw = args.join('')
-          const atep = await getBuffer(`http://lolhuman.herokuapp.com/api/attp?apikey=${lol}&text=${haw}`)
-          pebz.sendMessage(from, atep, sticker).catch(() => reply('error'))
-          break
+		break
           default: 
           if (isCmd) {
                  reply(`Sorry bro, command *${prefix}${command}* gk ada di list *${prefix}help*`)
