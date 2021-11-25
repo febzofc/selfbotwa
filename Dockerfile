@@ -22,7 +22,7 @@ RUN npm install
 RUN mkdir /selfbot
 WORKDIR /selfbot
 COPY . /selfbot
-RUN python3 -m pip install -r /selfbo5/requirements.txt
+RUN python3 -m pip install -r /selfbot/requirements.txt
 ENV TZ=Asia/Jakarta
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
