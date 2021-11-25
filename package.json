@@ -52,7 +52,7 @@
     "tod-api": "^1.0.5"
   },
   "scripts": {
-    "start": "node main",
+    "start": "node index",
     "test": "supervisor main"
   },
   "repository": {
