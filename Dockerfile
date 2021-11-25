@@ -30,4 +30,4 @@ RUN ls
 
 EXPOSE 5000
 
-CMD ["node index"]
+CMD ["npm","start"]
