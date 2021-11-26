@@ -45,7 +45,7 @@
     "spinnies": "^0.5.1",
     "stream": "0.0.2",
     "translate-google-api": "^1.0.4",
-    "util": "^0.12.4",
-    "yt-search": "^2.8.0"
+    "util": "^0.12.4"
+
   }
 }
