@@ -21,7 +21,9 @@ const { fetchJson, color, bgcolor } = require('./lib/fetcher')
 const { y2mate } = require('./lib/y2mate');
 const { y2mateA, y2mateV } = require('./lib/y2mate.js')
 const { yta, ytv, igdl, upload, formatDate } = require('./lib/ytdl')
-const { wait, getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, banner, start, info, success, close, uploadImages } = require('./lib/function')
+const { wikiSearch } = require('./lib/wiki.js')
+const { wait, getBuffer, h2k, generateMessageID, getGroupAdmins, getRandom, start, success, close } = require('./lib/function')
+
 const fetch = require('node-fetch')
 const get = require('got')
 const speednye = require('performance-now')
@@ -34,17 +36,14 @@ const yts = require('yt-search')
 const request = require('request')
 const pebz = new WAConnection()
 const {
-	vhter,
-	lol,
-	naufal,
-	xtem,
-	dev
+	OwnerNumber,
+	prefix,
+	lol
 } = require('./lib/config.json')
 
-prefix = '!'
 fake = '𝗙𝗘𝗕𝗭𝗦𝗘𝗟𝗙\nStatus : Online'
 let gambar = "" || fs.readFileSync('./media/gambar/biasa.png')
-self = true
+self = false
 blocked = []
 
 // SYSTEM QRCODE
@@ -52,6 +51,7 @@ pebz.ReconnectMode = 2
 pebz.logger.level = 'warn'
 pebz.version = [2, 2143, 8]
 pebz.browserDescription = ['CikoBot', 'Safari', '3.0']
+console.log(start)
 console.log('>', '[',color('Berhasil Tersambung Ke Perangkat','lime'),']','FEBSELF')
 pebz.on('qr', qr => {
 qrcode.generate(qr, { small : true })
@@ -64,8 +64,8 @@ pebz.on('credentials-updated', () => {
 	fs.writeFileSync('./pebz.json', JSON.stringify(authinfo, null, '\t'))
 })
    fs.existsSync('./pebz.json') && pebz.loadAuthInfo('./pebz.json')
-    pebz.connect();
-   
+   pebz.connect();
+ 
    pebz.on('CB:Blocklist', json => {
             if (blocked.length > 2) return
 	    for (let i of json[1].blocklist) {
@@ -141,7 +141,7 @@ pebz.on('credentials-updated', () => {
 			const isCmd = body.startsWith(prefix)
            
             const botNumber = pebz.user.jid
-			const ownerNumber = ['6285849261085@s.whatsapp.net','6287705048235@s.whatsapp.net']
+			const ownerNumber = ['6285849261085@s.whatsapp.net',`${OwnerNumber}@s.whatsapp.net`]
 			const isGroup = from.endsWith('@g.us')
 			const sender = isGroup ? mek.participant : mek.key.remoteJid
 			pushname = pebz.contacts[sender] != undefined ? pebz.contacts[sender].vname || pebz.contacts[sender].notify : undefined
@@ -155,12 +155,7 @@ pebz.on('credentials-updated', () => {
 			const isGroupAdmins = groupAdmins.includes(sender) || false
             const isWelcome = isGroup ? welkom.includes(from):false
 			const isOwner = ownerNumber.includes(sender)
-			/*const sendFileFromStorage = (path, type, options) => {
-pebz.sendMessage(from, fs.readFileSync(path), type, options).catch(e => {
-reply('_[ ! ] Error Gagal Dalam Mengirim Media_')
-console.log(e)
-})
-}*/
+
 const sendFile = async (medya, namefile, capti, tag, vn) => {
   baper = await getBuffer(medya)
   mimi = ''
@@ -351,23 +346,32 @@ console.log(e)
         }
 const time2 = moment().tz("Asia/Makassar").format("HH:mm:ss");
     if (time2 < "24:59:00") {
-      var ucapanWaktu = "Selamat malam🌃";
+      var ucapanWaktu = "GoodNight🌃";
     }
     if (time2 < "19:00:00") {
-      var ucapanWaktu = "Selamat senja🌞";
+      var ucapanWaktu = "GoodEvening🌞";
     }
     if (time2 < "18:00:00") {
-      var ucapanWaktu = "Selamat sore🌄";
+      var ucapanWaktu = "GoodEvening🌄";
     }
     if (time2 < "15:00:00") {
-      var ucapanWaktu = "Selamat siang☀️";
+      var ucapanWaktu = "GoodAfternoon☀️";
     }
     if (time2 < "11:00:00") {
-      var ucapanWaktu = "Selamat pagi🌅";
+      var ucapanWaktu = "GoodMoorning🌅";
     }
     if (time2 < "05:00:00") {
-      var ucapanWaktu = "Selamat malam🌃";
-    }			
+      var ucapanWaktu = "GoodNight🌃";
+    }
+    function kyun(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+}			
 			colors = ['red','white','black','blue','yellow','green']
 	     	const isMedia = (type === 'imageMessage' || type === 'videoMessage')
             const isQuotedText = type === 'extendedTextMessage' && content.includes('textMessage')
@@ -382,27 +386,31 @@ const time2 = moment().tz("Asia/Makassar").format("HH:mm:ss");
            
              switch(command) {
              case 'menu':
-             case 'help':             
+             case 'help':
+             uptime = process.uptime()            
 		     const hiya = await fetchJson('https://xinzbot-api.herokuapp.com/api/ucapan?apikey=XinzBot&timeZone=Asia/Jakarta', {method:'get'})
 		     var p = '```'
-		    const tod =`${p}SELFBOT FEBRI${p}
-${p}😇${ucapanWaktu} kak ${pushname}${p}		    
-${p}😎prefix : ${prefix}${p}`
+		    const tod =`*_SELFBOT FEBZ_*
+${p}👋${ucapanWaktu}kak ${pushname}${p}		    
+${p}🔑Prefix : ${prefix}${p}
+${p}⏳Runtime : ${kyun(uptime)}${p}`
 tod2 =`
-*_📋ListMenu_*
+*_📋BOT MENU_*
 ${p}📴${prefix}self${p}
 ${p}📳${prefix}public${p}
 ${p}🔊${prefix}broadcast${p} 
-${p}👻${prefix}sticker${p} 
-${p}👻${prefix}sticker2${p} 
-${p}📚${prefix}nulis <text>${p}
-${p}🍃${prefix}play <judul lagunya>${p}
-${p}🍃${prefix}tiktokmusic <link>${p}
-${p}💾${prefix}tiktokdl <linknya>${p}
-${p}🗃️${prefix}imgtopdf <reply img>${p}
-*_🎮FunGame_*
+${p}👻${prefix}sticker <replyimg>${p}
+${p}📚${prefix}write <text>${p}
+${p}🍃${prefix}play <query>${p}
+${p}🔎${prefix}wiki <query>${p}
+${p}🔎${prefix}google <query>${p}
+${p}🖼️${prefix}pinterest <query>${p}
+${p}📴${prefix}quotesharian${p}
+
+*_🎮FUNTIME_*
 ${p}🆚${prefix}truth${p}
 ${p}🆚${prefix}dare${p}
+${p}🤖${prefix}simi <text>${p}
 
 *_ɪɴғᴏ ʙᴏᴛ_*
 » ɢᴜɴᴀᴋᴀɴ ʟɪɴᴋ ᴛɪᴋᴛᴏᴋ ᴏʀɪ ɴᴏ ʟɪᴛᴇ
@@ -449,16 +457,47 @@ const pebz2 = {
            } 
            pebz.sendMessage(from, txt, MessageType.text, pebz2)
            break
-           
-           
-           case 'play':
-             if (args.length < 1) return reply(`Kirim perintah *${prefix}play query`)
-             reply(mess.wait)
-             let yut = await yts(q)
-             yta(yut.videos[0].url)             
-             .then(async(res) => {
-             const { thumb, title, filesizeF, filesize } = res
-             const capti = `𝗬𝗢𝗨𝗧𝗨𝗕𝗘 𝗣𝗟𝗔𝗬🍁
+           case 'quotesimg':
+           case 'quotesharian':
+           todzi = await getBuffer(`https://api.lolhuman.xyz/api/random/quotesimage?apikey=${lol}`)
+           pebz.sendMessage(from, todzi, image, {quoted : mek })
+           break
+           case 'simi':
+           if (args.length == 0) return reply(`Hallo Kak ${pushname}`)
+           teksni = args.join(" ")
+           get_result = await fetchJson(`https://api.lolhuman.xyz/api/simi?apikey=${lol}&text=${teksni}`)
+           getresult = get_result.result
+             reply(getresult)         
+             break           
+             case 'pinterest':
+             if (args.length == 0) return reply(`Example: ${prefix + command} loli kawaii`)
+             query = args.join(" ")
+             ini_url = await fetchJson(`https://api.lolhuman.xyz/api/pinterest?apikey=${lol}&query=${query}`)
+             ini_url = ini_url.result
+             ini_buffer = await getBuffer(ini_url)
+             await pebz.sendMessage(from, ini_buffer, image, { quoted: mek })
+             break
+             case 'wiki':
+            if (args.length < 1) return reply(' Yang Mau Di Cari Apa? ')
+            teks = args.join(' ')
+            resa = await wikiSearch(teks).catch(e => {
+            return reply('_[ ! ] Error Hasil Tidak Ditemukan_') 
+            }) 
+result = `❒「  *Wiki*  」
+├ *Judul :* ${resa[0].judul}
+└ *Wiki :* ${resa[0].wiki}`
+           sendFileFromUrl(resa[0].thumb, image, {quoted: fkontak, caption: result}).catch(e => {
+           reply(result)
+           })
+        break
+        case 'play':
+        if (args.length < 1) return reply(`Kirim perintah *${prefix}play query`)
+        reply(mess.wait)
+        let yut = await yts(q)
+        yta(yut.videos[0].url)             
+        .then(async(res) => {
+        const { thumb, title, filesizeF, filesize } = res
+        const capti = `𝗬𝗢𝗨𝗧𝗨𝗕𝗘 𝗣𝗟𝗔𝗬🍁
 		     
 •💬 Judul : ${yut.all[0].title}
 •🎥 ID Video : ${yut.all[0].videoId}
@@ -466,51 +505,50 @@ const pebz2 = {
 •👁️️ Views : ${yut.all[0].views}
 •▶️ Durasi : ${yut.all[0].timestamp}
 •📍 Channel : ${yut.all[0].author.name}
-•🔗 Link Channel : ${yut.all[0].author.url}`
-             ya = await getBuffer(thumb)
-             py =await pebz.prepareMessage(from, ya, image)
-             gbutsan = [{buttonId: `${prefix}buttonmusic ${yut.all[0].url}`, buttonText: {displayText: '🎵AUDIO'}, type: 1},{buttonId: `${prefix}buttonvideo ${yut.all[0].url}`, buttonText: {displayText: '🎥VIDEO'}, type: 1}]
-             gbuttonan = {
-             imageMessage: py.message.imageMessage,
-             contentText: capti,
-             footerText: 'Silahkan Pilih Jenis File Dibawah Ini☕',
-             buttons: gbutsan,
-             headerType: 4
+•🔗 Link Channel : ${yut.all[0].author.url}`      
+        ya = await getBuffer(thumb)
+        py =await pebz.prepareMessage(from, ya, image)
+        gbutsan = [{buttonId: `${prefix}buttonmusic ${yut.all[0].url}`, buttonText: {displayText: '🎵AUDIO'}, type: 1},{buttonId: `${prefix}buttonvideo ${yut.all[0].url}`, buttonText: {displayText: '🎥VIDEO'}, type: 1}]
+        gbuttonan = {
+        imageMessage: py.message.imageMessage,
+        contentText: capti,
+        footerText: 'Silahkan Pilih Jenis File Dibawah Ini☕',
+        buttons: gbutsan,
+        headerType: 4
 }
-             await pebz.sendMessage(from, gbuttonan, MessageType.buttonsMessage)})
-             break                
-             case 'buttonmusic':
-             if(!q) return reply('linknya?')              
-             res = await yta(`${q}`).catch(e => {
-             reply('```[ ! ] Error Saat Mengirim Audio```')})
-             sendMedia(from, `${res.dl_link}`,{quoted:mek})
-             break         
-case 'buttonvideo':
-             if(!q) return reply('linknya?')            
-             res = await ytv(`${q}`).catch(e => {
-             reply('```[ ! ] Error Saat Mengirim Video```')})
-             sendMedia(from, `${res.dl_link}`,'Nih Kack')
-             break
-           
-                   case 'tiktokdl':
-                    if (args.length == 0) return reply(`Contoh: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
-                    ini_url = args[0]
-                    ini_url = `http://api.lolhuman.xyz/api/tiktok?apikey=DashBot&url=${ini_url}`
-                    get_result = await fetchJson(ini_url)
-                    ini_buffer = await getBuffer(get_result.result.link)
-                    pebz.sendMessage(from, ini_buffer, video, { quoted: mek })
-                    break
-case 'tiktokmusic':
-                    if (args.length == 0) return reply(`Example: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
-                    reply('tunggu broo')
-                    ini_link = args[0]
-                    get_audio = await getBuffer(`https://api.lolhuman.xyz/api/tiktokmusic?apikey=${lol}&url=${ini_link}`)
-                    await pebz.sendMessage(from, get_audio, audio, { mimetype: Mimetype.mp4Audio, quoted: mek })
-                    break       
-          case 'trut':
-            case 'truth':
-                  if (!isGroup) return reply('KhususGrup')
-                  const trut =['Pernah suka sama siapa aja? berapa lama?','Kalau boleh atau kalau mau, di gc/luar gc siapa yang akan kamu jadikan sahabat?(boleh beda/sma jenis)','apa ketakutan terbesar kamu?','pernah suka sama orang dan merasa orang itu suka sama kamu juga?','Siapa nama mantan pacar teman mu yang pernah kamu sukai diam diam?','pernah gak nyuri uang nyokap atau bokap? Alesanya?','hal yang bikin seneng pas lu lagi sedih apa','pernah cinta bertepuk sebelah tangan? kalo pernah sama siapa? rasanya gimana brou?','pernah jadi selingkuhan orang?','hal yang paling ditakutin','siapa orang yang paling berpengaruh kepada kehidupanmu','hal membanggakan apa yang kamu dapatkan di tahun ini','siapa orang yang bisa membuatmu sange','siapa orang yang pernah buatmu sange','(bgi yg muslim) pernah ga solat seharian?','Siapa yang paling mendekati tipe pasangan idealmu di sini','suka mabar(main bareng)sama siapa?','pernah nolak orang? alasannya kenapa?','Sebutkan kejadian yang bikin kamu sakit hati yang masih di inget','pencapaian yang udah didapet apa aja ditahun ini?','kebiasaan terburuk lo pas di sekolah apa?']
+        await pebz.sendMessage(from, gbuttonan, MessageType.buttonsMessage)})
+        break                
+        case 'buttonmusic':
+        if(!q) return reply('linknya?')              
+        res = await yta(`${q}`).catch(e => {
+        reply('```[ ! ] Error Saat Mengirim Audio```')})
+        sendMedia(from, `${res.dl_link}`,{quoted:mek})
+        break         
+        case 'buttonvideo':
+        if(!q) return reply('linknya?')            
+        res = await ytv(`${q}`).catch(e => {
+        reply('```[ ! ] Error Saat Mengirim Video```')})
+        sendMedia(from, `${res.dl_link}`,'Nih Kack')
+        break                      
+        case 'tiktokdl':
+        if (args.length == 0) return reply(`Contoh: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
+         ini_url = args[0]
+        ini_url = `http://api.lolhuman.xyz/api/tiktok?apikey=DashBot&url=${ini_url}`
+        get_result = await fetchJson(ini_url)
+        ini_buffer = await getBuffer(get_result.result.link)
+        pebz.sendMessage(from, ini_buffer, video, { quoted: mek })
+        break
+        case 'tiktokmusic':
+        if (args.length == 0) return reply(`Example: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
+        reply('tunggu broo')
+        ini_link = args[0]
+        get_audio = await getBuffer(`https://api.lolhuman.xyz/api/tiktokmusic?apikey=${lol}&url=${ini_link}`)
+        await pebz.sendMessage(from, get_audio, audio, { mimetype: Mimetype.mp4Audio, quoted: mek })
+        break         
+        case 'trut':
+        case 'truth':
+        if (!isGroup) return reply('KhususGrup')
+        const trut =['Pernah suka sama siapa aja? berapa lama?','Kalau boleh atau kalau mau, di gc/luar gc siapa yang akan kamu jadikan sahabat?(boleh beda/sma jenis)','apa ketakutan terbesar kamu?','pernah suka sama orang dan merasa orang itu suka sama kamu juga?','Siapa nama mantan pacar teman mu yang pernah kamu sukai diam diam?','pernah gak nyuri uang nyokap atau bokap? Alesanya?','hal yang bikin seneng pas lu lagi sedih apa','pernah cinta bertepuk sebelah tangan? kalo pernah sama siapa? rasanya gimana brou?','pernah jadi selingkuhan orang?','hal yang paling ditakutin','siapa orang yang paling berpengaruh kepada kehidupanmu','hal membanggakan apa yang kamu dapatkan di tahun ini','siapa orang yang bisa membuatmu sange','siapa orang yang pernah buatmu sange','(bgi yg muslim) pernah ga solat seharian?','Siapa yang paling mendekati tipe pasangan idealmu di sini','suka mabar(main bareng)sama siapa?','pernah nolak orang? alasannya kenapa?','Sebutkan kejadian yang bikin kamu sakit hati yang masih di inget','pencapaian yang udah didapet apa aja ditahun ini?','kebiasaan terburuk lo pas di sekolah apa?']
 		const ttrth = trut[Math.floor(Math.random() * trut.length)]
 		truteh = await getBuffer(`https://www.linkpicture.com/q/images_72.png`)
 	    but = [
@@ -523,31 +561,13 @@ case 'tiktokmusic':
 		if (!isGroup) return reply('KhususGrup')
 		const dare =['Kirim pesan ke mantan kamu dan bilang "aku masih suka sama kamu','telfon crush/pacar sekarang dan ss ke pemain','pap ke salah satu anggota grup','Bilang "KAMU CANTIK BANGET NGGAK BOHONG" ke cowo','ss recent call whatsapp','drop emot "😎??" setiap ngetik di gc/pc selama 1 hari','kirim voice note bilang can i call u baby?','drop kutipan lagu/quote, terus tag member yang cocok buat kutipan itu','pake foto sule sampe 3 hari','ketik pake bahasa daerah 24 jam','ganti nama menjadi "gue anak lucinta luna" selama 5 jam','chat ke kontak wa urutan sesuai %batre kamu, terus bilang ke dia "i lucky to hv you','prank chat mantan dan bilang " i love u, pgn balikan','record voice baca surah al-kautsar','bilang "i hv crush on you, mau jadi pacarku gak?" ke lawan jenis yang terakhir bgt kamu chat (serah di wa/tele), tunggu dia bales, kalo udah ss drop ke sini','sebutkan tipe pacar mu!','snap/post foto pacar/crush','teriak gajelas lalu kirim pake vn kesini','pap mukamu lalu kirim ke salah satu temanmu','kirim fotomu dengan caption, aku anak pungut','teriak pake kata kasar sambil vn trus kirim kesini','teriak " anjimm gabutt anjimmm " di depan rumah mu','ganti nama jadi " BOWO " selama 24 jam','Pura pura kerasukan, contoh : kerasukan maung, kerasukan belalang, kerasukan kulkas, dll']
 		const der = dare[Math.floor(Math.random() * dare.length)]
-		tod = await getBuffer(`https://www.linkpicture.com/q/images_72.png`)
+		todz = await getBuffer(`https://www.linkpicture.com/q/images_72.png`)
 	    but = [
           { buttonId: `${prefix}truth`, buttonText: { displayText: 'ᴛʀᴜᴛʜ' }, type: 1 },
           { buttonId: `${prefix}dare`, buttonText: { displayText: 'ᴅᴀʀᴇ' }, type: 1 }
         ]
-        sendButLocation(from, der, 'GK JALANIN WAJIB DONATE',tod, but, {quoted: mek})
-        		break
-           case 'topdf':
-           if (!isQuotedImage) return reply('image nya di reply')
-           const ida = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace("quotedM","m")).message.extendedTextMessage.contextInfo : mek
-           const idk = await pebz.downloadMediaMessage(ida, 'buffer') 
-           const getpng = await uploadImages(idk, false)  
-           reply(mess.wait)
-           pdf = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/imgtopdf?apikey=DashBot&img=${getpng}`)
-           pebz.sendMessage(from, pdf, document, { mimetype: Mimetype.pdf, quoted:mek }).catch((err) => reply('error'))
-           break
-           case 'removebg':
-           if (!isQuotedImage) return reply('reply gambar nya') 
-           const biasalah = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace("quotedM","m")).message.extendedTextMessage.contextInfo : mek
-           const pebzgans1  = await pebz.downloadMediaMessage(biasalah, 'buffer') 
-           const getbg = await uploadImages(pebzgans1, false) 
-           reply(mess.wait)
-           pft = await getBuffer(`http://lolhuman.herokuapp.com/api/removebg?apikey=DashBot&img=${getbg}`)
-           await pebz.sendMessage(from, pft, image, {quoted:mek,caption:'Done'}).catch((err) => reply('error ):'))
-           break 
+        sendButLocation(from, der, 'GK JALANIN WAJIB DONATE',todz, but, {quoted: mek})
+       	   break 
            case 'self':
            if (!isOwner) return reply(mess.only.ownerB)
            if (self === true) return 
@@ -571,8 +591,10 @@ case 'tiktokmusic':
            pebz.sendMessage(from, lat, MessageType.text, pebzk)
            break  
            case 'status': 
+           uptime = process.uptime()
            let pingnye = speednye();
            let ping = speednye() - pingnye 
+           
            const { 
            os_version } = pebz.user.phone
            let akutext =`_「STATUS」_
@@ -584,7 +606,8 @@ case 'tiktokmusic':
 *WA : ${pebz.user.phone.wa_version}*
 *RAM : ${(process.memoryUsage().heapUsed / 111 / 1029 ).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1000 / 2000 )}MB*
 *OS : ${os_version} ANDROID*
-*SPEED : ${ping.toFixed(4)} SECOND*
+*SPEED : ${ping.toFixed(4)} SECOND
+*Runtime : ${kyun(uptime)}*
 ` 
             let faker = {
             contextInfo: {
@@ -627,6 +650,7 @@ case 'tiktokmusic':
            pebz.sendMessage(from, breh, MessageType.text, pebzganskun)
            break
            case 'nulis':
+           case 'write':
            try {
            if (args.length < 1) return reply(mess.notxt)
            reply(mess.wait)
@@ -637,50 +661,6 @@ case 'tiktokmusic':
               reply(`${e}`)
            }
            break 
-            case 'takestick':
-			if (!isQuotedSticker) return reply(`*Example*:\n*${prefix}takestick nama|author*`)
-		    const aku = body.slice(11)
-			if (!aku.includes('|')) return reply(`*Example*:\n*${prefix}takestick nama|author*`)
-		    const encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-		    const media = await pebz.downloadAndSaveMediaMessage(encmedia, `./trash/${sender}`)
-		    const packnamenye = aku.split('|')[0]
-		    const authornye = aku.split('|')[1]
-			exif.create(packnamenye, authornye, `aku2_${sender}`)
-			exec(`webpmux -set exif ./trash/aku2_${sender}.exif ./trash/${sender}.webp -o ./trash/${sender}.webp`, async (error) => {
-			if (error) return reply('*error ): coba ulangin*')
-			pebz.sendMessage(from, fs.readFileSync(`./trash/${sender}.webp`), MessageType.sticker, {quoted:mek})
-			fs.unlinkSync(media)
-		    fs.unlinkSync(`./trash/aku2_${sender}.exif`)
-			})
-		    break
-		    var imgbb = require('imgbb-uploader')
-if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedSticker)) {
-ger = isQuotedImage || isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
-owgi = await  pebz.downloadAndSaveMediaMessage(ger)
-anu = await imgbb("f0b190d67308d34811fab9c56fe8aba7", owgi)
-tekks = `${anu.display_url}`
-anu1 = `${tekks}`
-sendStickerFromUrl(from, `${anu1}`, mess.success)
-} else {
-reply('Gunakan foto!')
-}
-break   
-			         case 'stickerbulet':
-          const encmedia1 = isQuotedImage ? JSON.parse(JSON.stringify(mek).replace("quotedM","m")).message.extendedTextMessage.contextInfo : mek
-          const media1 = await pebz.downloadMediaMessage(encmedia1, 'buffer') 
-          const patrcik = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
-	      const hayokamu = await pebz.downloadAndSaveMediaMessage(patrcik, `./trash/${sender}`)
-		  getimg = await uploadImages(media1, false)
-		  kamu = await getBuffer(`http://lolhuman.herokuapp.com/api/convert/towebpwround?apikey=DashBot&img=${getimg}`) 
-		  const packnamenya = 'selfbot'
-          const authornya = 'LordPebri'
-		  exif.create(packnamenya, authornya, `biasalah_${sender}`)
-		  exec(`webpmux -set exif ./trash/biasalah_${sender}.exif ./trash/${sender}.webp -o ./trash/${sender}.webp`, async (error) => {
-		  await pebz.sendMessage(from, fs.readFileSync(`./trash/${sender}.webp`), sticker, {quoted:mek}).catch((err) => reply('error')) 
-		  fs.unlinkSync(hayokamu)
-		  fs.unlinkSync(`./trash/biasalah_${sender}.exif`)
-		  })
-		  break
 		  case 'sticker2':
 		  case 's2':
 		  var imgbb = require('imgbb-uploader')
@@ -816,6 +796,22 @@ break
          reply('Suksess broadcast')
          }
 		break
+		case 'hidetag':
+		if (!isOwner) return reply(mess.only.ownerB)
+    	var value = args.join(' ')
+		var group = await pebz.groupMetadata(from)
+		var member = group['participants']
+		var mem = []
+    	member.map(async adm => {
+		mem.push(adm.id.replace('c.us', 's.whatsapp.net'))
+		})
+		var optionshidetag = {
+	    text: value,
+		contextInfo: { mentionedJid: mem },
+		quoted: mek
+		}
+	    pebz.sendMessage(from, optionshidetag, text, { quoted: { key: { fromMe: false, participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: "393470602054-1351628616@g.us" } : {}) }, message: { "imageMessage": { "url": "https://mmg.whatsapp.net/d/f/At0x7ZdIvuicfjlf9oWS6A3AR9XPh0P-hZIVPLsI70nM.enc", "mimetype": "image/jpeg", "caption":'LordItsPebri',"fileSha256": "+Ia+Dwib70Y1CWRMAP9QLJKjIJt54fKycOfB2OEZbTU=", "fileLength": "28777", "height": 1080, "width": 1079, "mediaKey": "vXmRR7ZUeDWjXy5iQk17TrowBzuwRya0errAFnXxbGc=", "fileEncSha256": "sR9D2RS5JSifw49HeBADguI23fWDz1aZu4faWG/CyRY=", "directPath": "/v/t62.7118-24/21427642_840952686474581_572788076332761430_n.enc?oh=3f57c1ba2fcab95f2c0bb475d72720ba&oe=602F3D69", "mediaKeyTimestamp": "1610993486", "jpegThumbnail": gambar} }  } })
+					break
           default: 
           if (isCmd) {
                  reply(`Sorry bro, command *${prefix}${command}* gk ada di list *${prefix}help*`)
