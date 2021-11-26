@@ -605,7 +605,7 @@ result = `❒「  *Wiki*  」
 *WA : ${pebz.user.phone.wa_version}*
 *RAM : ${(process.memoryUsage().heapUsed / 111 / 1029 ).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1000 / 2000 )}MB*
 *OS : ${os_version} ANDROID*
-*SPEED : ${ping.toFixed(4)} SECOND
+*SPEED : ${ping.toFixed(4)} SECOND*
 *Runtime : ${kyun(uptime)}*
 ` 
             let faker = {
