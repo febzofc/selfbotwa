@@ -50,7 +50,7 @@ blocked = []
 pebz.ReconnectMode = 2
 pebz.logger.level = 'warn'
 pebz.version = [2, 2143, 8]
-pebz.browserDescription = ['CikoBot', 'Safari', '3.0']
+pebz.browserDescription = ['SelfBot By Pebri', 'Safari', '3.0']
 console.log(start)
 console.log('>', '[',color('Berhasil Tersambung Ke Perangkat','lime'),']','FEBSELF')
 pebz.on('qr', qr => {
