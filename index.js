@@ -403,7 +403,6 @@ ${p}👻${prefix}sticker <replyimg>${p}
 ${p}📚${prefix}write <text>${p}
 ${p}🍃${prefix}play <query>${p}
 ${p}🔎${prefix}wiki <query>${p}
-${p}🔎${prefix}google <query>${p}
 ${p}🖼️${prefix}pinterest <query>${p}
 ${p}📴${prefix}quotesharian${p}
 
