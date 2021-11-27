@@ -278,7 +278,7 @@ console.log(e)
 
         
 	        mess = {
-				wait: 'tunggu sebentar.......',
+				wait: 'tunggu sebentar......',
 				success: 'Sucess ✓“',
 				notxt: 'textnya mana ?',
 				error: {
