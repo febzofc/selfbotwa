@@ -407,7 +407,7 @@ ${p}🖼️${prefix}pinterest <query>${p}
 ${p}👻${prefix}sticker <replyimg>${p}
 ${p}️💌${prefix}imgsearch <query>${p}
 ${p}🎴${prefix}toimg <replysticker>${p}
-${p}🛠️️${prefix}takestick <author|pack>${p}
+${p}🛠️️${prefix}sticker2 <replyimg>${p}
 
 *_🎮FUNTIME_*
 ${p}🆚${prefix}truth${p}
