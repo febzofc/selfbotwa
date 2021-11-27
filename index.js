@@ -30,6 +30,7 @@ const speednye = require('performance-now')
 const fs = require('fs')
 const os = require('os')
 const qrcode = require('qrcode-terminal')
+const brainly = require('brainly-scraper')
 const moment = require('moment-timezone')
 const welkom = JSON.parse(fs.readFileSync('./lib/group/welcome.json'))
 const yts = require('yt-search')
@@ -50,7 +51,7 @@ blocked = []
 pebz.ReconnectMode = 2
 pebz.logger.level = 'warn'
 pebz.version = [2, 2143, 8]
-pebz.browserDescription = ['SelfBot By Pebri', 'Safari', '3.0']
+pebz.browserDescription = ['CikoBot', 'Safari', '3.0']
 console.log(start)
 console.log('>', '[',color('Berhasil Tersambung Ke Perangkat','lime'),']','FEBSELF')
 pebz.on('qr', qr => {
@@ -83,38 +84,36 @@ pebz.on('credentials-updated', () => {
 			}, 100);
 		})
 		
-		
-    pebz.on('group-participants-update', async(chat) => {
-        try {
-            mem = chat.participants[0]
-            try {
-                var pp_user = await pebz.getProfilePicture(mem)
-            } catch (e) {
-                var pp_user = 'https://www.linkpicture.com/q/20211125_113714.jpg'
-            }
-            try {
-                var pp_group = await pebz.getProfilePicture(chat.jid)
-            } catch (e) {
-                var pp_group = 'https://www.linkpicture.com/q/20211125_113714.jpg'
-            }
-            if (chat.action == 'add') {
-                ini_user = pebz.contacts[mem]
-                group_info = await pebz.groupMetadata(chat.jid)
-                ini_img = await getBuffer(`https://api.dapuhy.ga/api/canvas/welcome2?name=${ini_user.notify}&discriminator=${group_info.participants.length}&member=${group_info.participants.length}&gcname=${group_info.subject}&pp=${pp_user}&bg=https://www.linkpicture.com/q/20211125_113317.jpg&apikey=lordpebri`)                     
-                welkam = `${ini_user.notify}, Welkam to ${group_info.subject}`
-                await pebz.sendMessage(chat.jid, ini_img, MessageType.image, { caption: welkam })
-            }
-            if (chat.action == 'remove') {
-                ini_user = pebz.contacts[mem]
-                group_info = await pebz.groupMetadata(chat.jid)
-                 ini_img = await getBuffer(`https://api.dapuhy.ga/api/canvas/goodbye2?name=${ini_user.notify}&discriminator=${group_info.participants.length}&member=${group_info.participants.length}&gcname=${group_info.subject}&pp=${pp_user}&bg=https://www.linkpicture.com/q/20211125_113317.jpg&apikey=lordpebri`)   
-                ini_out = `${ini_user.notify}, Sayonara 👋`
-                await pebz.sendMessage(chat.jid, ini_img, MessageType.image, { caption: ini_out})
-            }
-        } catch (e) {
-            console.log('Error :', e)
-        }
-    })
+
+pebz.on('group-participants-update', async (chat) => {
+		try {
+			const mdata = await pebz.groupMetadata(chat.jid)
+			console.log(chat)
+			if (chat.action == 'add') {
+				num = chat.participants[0]
+				try {
+					ppimg = await pebz.getProfilePicture(`${chat.participants[0].split('@')[0]}@c.us`)
+				} catch {
+					ppimg = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+				}
+				teks = `*Hallo* @${num.split('@')[0]}\nSelamat datang di group *${mdata.subject}*\nJangan rusuh ya\nJangan lupa intro @${num.split('@')[0]} 🗣\nBtw Admin Disini Gay Whehe😂🤭`
+				let buff = await getBuffer(ppimg)
+				pebz.sendMessage(mdata.id, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
+				} else if (chat.action == 'remove') {
+				num = chat.participants[0]
+				try {
+					ppimg = await pebz.getProfilePicture(`${num.split('@')[0]}@c.us`)
+				} catch {
+					ppimg = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+				}
+				teks = `*Mau Tau Anak Kintill Gak? Ini👆* @${num.split('@')[0]}\n*fuck this human*`
+				let buff = await getBuffer(ppimg)
+				pebz.sendMessage(mdata.id, buff, MessageType.image, {caption: teks, contextInfo: {"mentionedJid": [num]}})
+			}
+		} catch (e) {
+			console.log('Error : %s', color(e, 'red'))
+		}
+	})
 		
 		
 		
@@ -176,7 +175,7 @@ const sendFile = async (medya, namefile, capti, tag, vn) => {
   pebz.sendMessage(from, baper, sticker, {quoted: tag})
   } else {
   kobe = namefile.split(`.`)[1]
-  client.sendMessage(from, baper, document, {mimetype: kobe, quoted: tag, filename: namefile})
+  pebz.sendMessage(from, baper, document, {mimetype: kobe, quoted: tag, filename: namefile})
   }
 }
 const sendFileFromUrl = async(link, type, options) => {
@@ -204,7 +203,10 @@ console.log(e)
 			}
 			const mentions = (teks, memberr, id) => {
 				(id == null || id == undefined || id == false) ? pebz.sendMessage(from, teks.trim(), extendedText, {contextInfo: {"mentionedJid": memberr}}) : pebz.sendMessage(from, teks.trim(), extendedText, {quoted: mek, contextInfo: {"mentionedJid": memberr}})
-			}  
+			}
+			       const fakethumb = (teks, yes) => {
+            pebz.sendMessage(from, teks, image, {thumbnail:fs.readFileSync('./media/gambar/biasa.png'),quoted:mek,caption:yes})
+            } 
 			const sendWebp = async(from, url) => {
                 var names = Date.now() / 10000;
                 var download = function (uri, filename, callback) {
@@ -227,7 +229,7 @@ console.log(e)
 			const sendMedia = async(from, url, text="", mids=[]) =>{
                 if(mids.length > 0){
                     text = normalizeMention(from, text, mids)
-                } 
+                }
                 const fn = Date.now() / 10000;
                 const filename = fn.toString()
                 let mime = ""
@@ -290,18 +292,18 @@ console.log(e)
 				}
 			}
 		   const lordpeb = {
-	key : {
+	       key : {
            participant : '0@s.whatsapp.net'
-                        },
-       message: {
-                    liveLocationMessage: {
-                    caption: `${pushname} ${pushname}`,
-                    jpegThumbnail: gambar
-                          }
-                        }
-                      }
-           const fkontak = { 
-           key: {fromMe: false,participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: `0@s.whatsapp.net` } : {}) }, message: { 'contactMessage': { 'displayName': `Hallo Kak ${pushname}\nSilahkan Pilih Menunya`, 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:XL;${pushname},;;;\nFN:${pushname},\nitem1.TEL;waid=${sender.split('@')[0]}:${sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`, 'jpegThumbnail': gambar}}}                   		
+           },
+           message: {
+           liveLocationMessage: {
+           caption: `${pushname} ${pushname}`,
+           jpegThumbnail: gambar
+           }
+           }
+           }
+        const fkontak = { 
+        key: {fromMe: false,participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: `0@s.whatsapp.net` } : {}) }, message: { 'contactMessage': { 'displayName': `Hallo Kak ${pushname}\nSilahkan Pilih Menunya`, 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:XL;${pushname},;;;\nFN:${pushname},\nitem1.TEL;waid=${sender.split('@')[0]}:${sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`, 'jpegThumbnail': gambar}}}                   		
         const sendButton = async (from, context, fortext, but, mek) => {
         buttonMessages = {
         contentText: context,
@@ -379,8 +381,8 @@ const time2 = moment().tz("Asia/Makassar").format("HH:mm:ss");
             const isQuotedVideo = type === 'extendedTextMessage' && content.includes('videoMessage')
             const isQuotedAudio = type === 'extendedTextMessage' && content.includes('audioMessage')
            const isQuotedSticker = type === 'extendedTextMessage' && content.includes('stickerMessage')
-			if (!isGroup && isCmd) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mPEBSELF\x1b[1;37m]', time, color(command), 'from', color(sender.split('@')[0]), 'args :', color(args.length))
-        	if (isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mPEBSELF\x1b[1;37m]', time, color(command), 'from', color(sender.split('@')[0]), 'in', color(groupName), 'args :', color(args.length))        	        	
+			if (!isGroup && isCmd) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mPEBSELF\x1b[1;37m]', color(pushname), 'Menggunakan Fitur', color(command), 'args :', color(args.length))
+        	if (isCmd && isGroup) console.log('\x1b[1;31m~\x1b[1;37m>', '[\x1b[1;32mPEBSELF\x1b[1;37m]', color(pushname), 'Memakai Fitur', color(command), 'DI Group', color(groupName), 'args :', color(args.length))        	        	
             if (self === true && !isOwner && isCmd) return
           
            
@@ -390,21 +392,22 @@ const time2 = moment().tz("Asia/Makassar").format("HH:mm:ss");
              uptime = process.uptime()            
 		     const hiya = await fetchJson('https://xinzbot-api.herokuapp.com/api/ucapan?apikey=XinzBot&timeZone=Asia/Jakarta', {method:'get'})
 		     var p = '```'
-		    const tod =`*_SELFBOT FEBZ_*
+		    const tod =`*_🍁SELFBOT FEBZ🧡_*		    
 ${p}👋${ucapanWaktu}kak ${pushname}${p}		    
 ${p}🔑Prefix : ${prefix}${p}
 ${p}⏳Runtime : ${kyun(uptime)}${p}`
 tod2 =`
 *_📋BOT MENU_*
-${p}📴${prefix}self${p}
-${p}📳${prefix}public${p}
-${p}🔊${prefix}broadcast${p} 
-${p}👻${prefix}sticker <replyimg>${p}
-${p}📚${prefix}write <text>${p}
-${p}🍃${prefix}play <query>${p}
+${p}📚${prefix}nulis <text>${p}
+${p}🍁${prefix}play <query>${p}
 ${p}🔎${prefix}wiki <query>${p}
+${p}🍂${prefix}quotesharian${p}
+${p}📥️${prefix}tiktokdl <link>${p}
 ${p}🖼️${prefix}pinterest <query>${p}
-${p}📴${prefix}quotesharian${p}
+${p}👻${prefix}sticker <replyimg>${p}
+${p}️💌${prefix}imgsearch <query>${p}
+${p}🎴${prefix}toimg <replysticker>${p}
+${p}🛠️️${prefix}takestick <author|pack>${p}
 
 *_🎮FUNTIME_*
 ${p}🆚${prefix}truth${p}
@@ -412,10 +415,16 @@ ${p}🆚${prefix}dare${p}
 ${p}🤖${prefix}simi <text>${p}
 
 *_ɪɴғᴏ ʙᴏᴛ_*
-» ɢᴜɴᴀᴋᴀɴ ! ᴜɴᴛᴜᴋ ᴄᴏᴍᴍᴀɴᴅ
-» ᴛᴇᴋs ᴊᴀɴɢᴀɴ ᴛᴇʀʟᴀʟᴜ ᴘᴀɴᴊᴀɴɢ
+» ᴛᴇʟғᴏɴ ʙᴏᴛ = ʙʟᴏᴄᴋ ᴘᴇʀᴍᴀᴍᴇɴ
+» ɢᴜɴᴀᴋᴀɴ ᴅᴇɴɢᴀɴ ʙᴀɪᴋ , ʙɪᴊᴀᴋ
+*_ᴛʜᴀɴᴋs ᴛᴏ_*
+» ʟᴏʀᴅ ᴘᴇʙʀɪ
+» ᴍᴀsᴛᴀʜ ʜᴀɴᴢ
+» ᴍᴀsᴛᴀʜ ᴀᴋɪʀᴀ
+» ᴋᴀʜᴢ ʙᴏᴛ
+» ʜᴏsʜɪᴢᴏʀᴀ
 
-Made With❣️
+*_©ғᴇʙᴢsᴇʟғʙᴏᴛ_*
 `           
            but = [
           { buttonId: `${prefix}owner1`, buttonText: { displayText: 'creator' }, type: 1 },
@@ -456,26 +465,51 @@ const pebz2 = {
            } 
            pebz.sendMessage(from, txt, MessageType.text, pebz2)
            break
+           case 'imgsearch':
+            if(!q) return reply(`gambar apa?\n${prefix}chara nino`)
+            let im = await hx.chara(q)
+            let acak = im[Math.floor(Math.random() * im.length)]
+            let li = await getBuffer(acak)
+            await pebz.sendMessage(from,li,image,{quoted: mek})
+            break
+            case 'pinterest':
+            if(!q) return reply('gambar apa?')
+            let pin = await hx.pinterest(q)
+            let ac = pin[Math.floor(Math.random() * pin.length)]
+            let di = await getBuffer(ac)
+            await pebz.sendMessage(from,di,image,{quoted: mek})
+            break
+       	   case 'tiktokdl':
+       	   case 'tiktok':
+       	   case 'tt':
+       	   case 'ttdl':
+ 		   if (!isUrl(args[0]) && !args[0].includes('tiktok.com')) return reply(error.lv)
+ 		   reply(mess.wait)
+		    hx.ttdownloader(`${args[0]}`)
+    		.then(result => {
+    		const { wm, nowm, audio } = result
+    		axios.get(`https://tinyurl.com/api-create.php?url=${nowm}`)
+    		.then(async (a) => {
+    		me = `*Lain Kali Jangan Gitu Yak Waterpak Men!!*`
+		    pebz.sendMessage(from,{url:`${nowm}`},video,{mimetype:'video/mp4',quoted:mek,caption:me})
+		    })
+	    	})
+     		.catch(e => console.log(e))
+     		break
            case 'quotesimg':
            case 'quotesharian':
            todzi = await getBuffer(`https://api.lolhuman.xyz/api/random/quotesimage?apikey=${lol}`)
            pebz.sendMessage(from, todzi, image, {quoted : mek })
            break
            case 'simi':
+           case 'p':
+           case 'bot':
            if (args.length == 0) return reply(`Hallo Kak ${pushname}`)
            teksni = args.join(" ")
            get_result = await fetchJson(`https://api.lolhuman.xyz/api/simi?apikey=${lol}&text=${teksni}`)
            getresult = get_result.result
              reply(getresult)         
              break           
-             case 'pinterest':
-             if (args.length == 0) return reply(`Example: ${prefix + command} loli kawaii`)
-             query = args.join(" ")
-             ini_url = await fetchJson(`https://api.lolhuman.xyz/api/pinterest?apikey=${lol}&query=${query}`)
-             ini_url = ini_url.result
-             ini_buffer = await getBuffer(ini_url)
-             await pebz.sendMessage(from, ini_buffer, image, { quoted: mek })
-             break
              case 'wiki':
             if (args.length < 1) return reply(' Yang Mau Di Cari Apa? ')
             teks = args.join(' ')
@@ -528,22 +562,7 @@ result = `❒「  *Wiki*  」
         res = await ytv(`${q}`).catch(e => {
         reply('```[ ! ] Error Saat Mengirim Video```')})
         sendMedia(from, `${res.dl_link}`,'Nih Kack')
-        break                      
-        case 'tiktokdl':
-        if (args.length == 0) return reply(`Contoh: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
-         ini_url = args[0]
-        ini_url = `http://api.lolhuman.xyz/api/tiktok?apikey=DashBot&url=${ini_url}`
-        get_result = await fetchJson(ini_url)
-        ini_buffer = await getBuffer(get_result.result.link)
-        pebz.sendMessage(from, ini_buffer, video, { quoted: mek })
-        break
-        case 'tiktokmusic':
-        if (args.length == 0) return reply(`Example: ${prefix + command} https://vt.tiktok.com/ZSwWCk5o/`)
-        reply('tunggu broo')
-        ini_link = args[0]
-        get_audio = await getBuffer(`https://api.lolhuman.xyz/api/tiktokmusic?apikey=${lol}&url=${ini_link}`)
-        await pebz.sendMessage(from, get_audio, audio, { mimetype: Mimetype.mp4Audio, quoted: mek })
-        break         
+        break                               
         case 'trut':
         case 'truth':
         if (!isGroup) return reply('KhususGrup')
@@ -605,7 +624,7 @@ result = `❒「  *Wiki*  」
 *WA : ${pebz.user.phone.wa_version}*
 *RAM : ${(process.memoryUsage().heapUsed / 111 / 1029 ).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1000 / 2000 )}MB*
 *OS : ${os_version} ANDROID*
-*SPEED : ${ping.toFixed(4)} SECOND*
+*SPEED : ${ping.toFixed(4)} SECOND
 *Runtime : ${kyun(uptime)}*
 ` 
             let faker = {
@@ -674,7 +693,33 @@ sendStickerFromUrl(from, `${anu1}`, mess.success)
 reply('Gunakan foto!')
 }
 break  
-          case "sticker":
+          case 'toimg':
+			if (!isQuotedSticker) return reply('𝗥𝗲𝗽𝗹𝘆/𝘁𝗮𝗴 𝘀𝘁𝗶𝗰𝗸𝗲𝗿 !')
+			reply(mess.wait)
+			encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+			media = await pebz.downloadAndSaveMediaMessage(encmedia)
+			ran = getRandom('.png')
+			exec(`ffmpeg -i ${media} ${ran}`, (err) => {
+			fs.unlinkSync(media)
+			if (err) return reply('Yah gagal, coba ulangi ^_^')
+			buffer = fs.readFileSync(ran)
+			fakethumb(buffer,'Kek Gini Bukan?')
+			fs.unlinkSync(ran)
+			})
+			break
+         case 'take':      
+         case 'colong':
+         case 'comot':
+    		if (!isQuotedSticker) return reply('Stiker aja om')
+            encmedia = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
+		    media = await pebz.downloadAndSaveMediaMessage(encmedia)
+            anu = args.join(' ').split('|')
+            satu = anu[0] !== '' ? anu[0] : `SELF`
+            dua = typeof anu[1] !== 'undefined' ? anu[1] : `BOT`
+            require('./lib/fetcherr.js').createExif(satu, dua)
+			require('./lib/fetcherr.js').modStick(media, pebz, mek, from)
+			break
+             case "sticker":
       case "stiker":
       case "sg":
       case "s":
@@ -817,9 +862,10 @@ break
                     }
 					if (isGroup && budy != undefined) {
 				} else {
-						console.log(color('[SYSTEM]','yellow'), 'Unregistered Command from', color(sender.split('@')[0]))
+						console.log(color('[SYSTEM]','yellow'), 'PERINTAH TAK DIKENAL DARI', color(sender.split('@')[0]))
 					}
                            }
+                           
 		} catch (e) {
 			console.log('Error : %s', color(e, 'red'))
 		}
