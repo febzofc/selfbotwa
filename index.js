@@ -79,7 +79,7 @@ pebz.on('credentials-updated', () => {
 		calling = JSON.parse(JSON.stringify(json))
 		call = calling[1].from
 		setTimeout(function(){
-			pebz.sendMessage(call, 'Maaf, saya tidak bisa menerima panggilan. nelfon = block!.\nJika ingin membuka block harap chat Owner!\nhttps//wa.me/+6285849261085', MessageType.text)
+			pebz.sendMessage(call, 'Maaf, saya tidak bisa menerima panggilan. nelfon = block!', MessageType.text)
 			.then(() => pebz.blockUser(call, "add"))
 			}, 100);
 		})
