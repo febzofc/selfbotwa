@@ -184,7 +184,7 @@ pebz.sendMessage(from, hasil, type, options).catch(e => {
 fetch(link).then((hasil) => {
 pebz.sendMessage(from, hasil, type, options).catch(e => {
 pebz.sendMessage(from, { url : link }, type, options).catch(e => {
-reply('_[ ! ] Error Gagal Dalam Mendownload Dan Mengirim Media_')
+reply('_[ ! ] Error Gagal Dalam Mendownload Dan Mengirim Media!!_')
 console.log(e)
 })
 })
